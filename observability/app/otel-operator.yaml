@@ -1,0 +1,32 @@
+# OpenTelemetry Operator — injects auto-instrumentation agents into annotated pods.
+# Installs the Instrumentation CRD that resources.yaml (wave 1) depends on. Values via $values.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability-otel-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  sources:
+    - repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
+      chart: opentelemetry-operator
+      targetRevision: 0.122.0
+      helm:
+        releaseName: otel-operator
+        valueFiles:
+          - $values/observability/otel-operator-values.yaml
+    - repoURL: https://github.com/mogambo-project/mogambo-platform.git
+      targetRevision: master
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

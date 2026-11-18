@@ -1,0 +1,33 @@
+# Monitoring — Prometheus + Grafana (kube-prometheus-stack). Values come from monitoring/values.yaml
+# in THIS repo via a multi-source $values ref (one values file, no duplication).
+# Sync-wave 0: installs the Prometheus-Operator CRDs that resources.yaml (wave 1) uses.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 88.2.0
+      helm:
+        releaseName: monitoring
+        valueFiles:
+          - $values/monitoring/values.yaml
+    - repoURL: https://github.com/mogambo-project/mogambo-platform.git
+      targetRevision: master
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

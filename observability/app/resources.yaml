@@ -1,0 +1,25 @@
+# Observability's own manifests: the namespace, the Instrumentation CR (mogambo ns), and the Grafana
+# datasource ConfigMaps (monitoring ns). Sync-wave 1: the Instrumentation CR needs the OTel Operator's
+# CRD (installed at wave 0).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability-resources
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mogambo-project/mogambo-platform.git
+    targetRevision: master
+    path: observability
+    directory:
+      include: '{namespace.yaml,instrumentation.yaml,grafana-datasources.yaml}'   # skips app/ + *-values.yaml + README
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability   # default only; each manifest carries its own namespace
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

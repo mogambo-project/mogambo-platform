@@ -1,0 +1,31 @@
+# Alloy — log collector (tails every pod's logs → Loki). Values from observability/alloy-values.yaml.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability-alloy
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  sources:
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: alloy
+      targetRevision: 1.12.1
+      helm:
+        releaseName: alloy
+        valueFiles:
+          - $values/observability/alloy-values.yaml
+    - repoURL: https://github.com/mogambo-project/mogambo-platform.git
+      targetRevision: master
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

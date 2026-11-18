@@ -1,0 +1,27 @@
+# Envoy Gateway — the Gateway API controller (OCI Helm chart). Bump targetRevision + push to upgrade.
+# Sync-wave 0: brings in the Gateway API + EnvoyProxy CRDs that resources.yaml (wave 1) depends on.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gateway
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: docker.io/envoyproxy      # OCI registry + namespace (no oci:// prefix in this field)
+    chart: gateway-helm
+    targetRevision: 1.8.3
+    helm:
+      releaseName: eg                  # same release name as the old install → clean adopt
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: envoy-gateway-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

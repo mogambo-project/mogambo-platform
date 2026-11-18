@@ -1,0 +1,27 @@
+# VPA controller (Fairwinds) — the VerticalPodAutoscaler controller + its CRDs. Required by the VPA
+# objects the shared chart renders for the DB StatefulSets (right-sizing recommendations).
+#   Was:  day-0  helm install vpa fairwinds-stable/vpa --version 4.11.0 -n vpa
+#   Now:  Argo CD manages it.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vpa
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.fairwinds.com/stable
+    chart: vpa
+    targetRevision: 4.11.0
+    helm:
+      releaseName: vpa
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vpa
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true    # installs CRDs — SSA avoids the last-applied annotation limit

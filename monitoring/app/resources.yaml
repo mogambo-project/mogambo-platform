@@ -1,0 +1,26 @@
+# Monitoring's own manifests: Grafana HTTPRoute, alert rules, the Envoy PodMonitor, and the dashboard
+# ConfigMaps under dashboards/. Synced from this tool's folder — everything EXCEPT the chart values,
+# docs, and the app/ Applications. Sync-wave 1: PrometheusRule/PodMonitor need the operator CRDs (wave 0).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-resources
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mogambo-project/mogambo-platform.git
+    targetRevision: master
+    path: monitoring
+    directory:
+      recurse: true                            # includes dashboards/*
+      exclude: '{values.yaml,README.md,app/**}'  # values = chart input; app/ = the Applications
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

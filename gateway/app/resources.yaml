@@ -1,0 +1,24 @@
+# Gateway API resources that configure the controller: GatewayClass + EnvoyProxy + Gateway.
+# Synced from this tool's own folder. Sync-wave 1: after the controller & CRDs (wave 0).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gateway-resources
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mogambo-project/mogambo-platform.git
+    targetRevision: master
+    path: gateway
+    directory:
+      include: '{gatewayclass.yaml,envoyproxy.yaml,gateway.yaml}'   # the CRs; skips app/ + README
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mogambo       # default only; each CR carries its own namespace (GatewayClass is cluster-scoped)
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

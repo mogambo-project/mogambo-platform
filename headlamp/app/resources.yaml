@@ -1,0 +1,24 @@
+# Headlamp's own manifests: admin RBAC (SA + ClusterRoleBinding + long-lived token) and its HTTPRoute.
+# Sync-wave 1: after the chart (its Service is the route backend).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: headlamp-resources
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mogambo-project/mogambo-platform.git
+    targetRevision: master
+    path: headlamp
+    directory:
+      include: '{admin-rbac.yaml,route.yaml}'   # skips app/ + README
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: headlamp
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

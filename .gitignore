@@ -1,0 +1,10 @@
+# CI tool fetched into the workspace by the Jenkinsfile
+kubeconform
+
+# Helm dependency builds (none today, but keep infra charts from being committed if added later)
+**/charts/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp

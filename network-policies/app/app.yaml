@@ -1,0 +1,22 @@
+# NetworkPolicies — the cluster firewall rules (plain manifests, no chart). Synced from this folder.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: network-policies
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mogambo-project/mogambo-platform.git
+    targetRevision: master
+    path: network-policies
+    directory:
+      recurse: false       # top-level *.yaml only → the app/ Application files are not re-applied
+      exclude: 'app/**'    # belt-and-suspenders
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mogambo
+  syncPolicy:
+    automated:
+      prune: false        # a deleted/loosened policy is auto-restored (security drift protection)
+      selfHeal: true
