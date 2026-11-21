@@ -26,7 +26,7 @@ spec:
     namespace: monitoring
   syncPolicy:
     automated:
-      prune: false
+      prune: true          # so components turned off in values (grafana, ksm, node-exporter) are actually removed, not left running
       selfHeal: true
     syncOptions:
       - CreateNamespace=true

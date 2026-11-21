@@ -1,17 +1,24 @@
 # Trimmed kube-prometheus-stack for a memory-limited kind/WSL cluster (~3 GB free).
 # Full defaults would OOM this VM, so: no Alertmanager, short retention, single replicas, capped RAM.
+# SCALED OFF to free RAM (parent-chart conditions). Set true to bring these back.
+kubeStateMetrics:
+  enabled: false
+nodeExporter:
+  enabled: false
+
 alertmanager:
   enabled: false                 # no alerting needed locally
 
 prometheus:
   prometheusSpec:
     retention: 6h                # ephemeral emptyDir storage; short window keeps RAM/disk small
-    replicas: 1
+    replicas: 0                  # SCALED TO 0 to free RAM (operator kept so the CR/webhook stay valid). Restore to 1 to bring Prometheus back.
     resources:
       requests: { cpu: "100m", memory: "300Mi" }
       limits:   { memory: "800Mi" }
 
 grafana:
+  enabled: false                 # SCALED OFF to free RAM. Set true to bring Grafana back.
   adminPassword: "admin"         # local only — change if you ever expose this
   defaultDashboardsEnabled: true # ships the standard Kubernetes dashboards
   persistence:

@@ -24,7 +24,7 @@ spec:
     namespace: observability
   syncPolicy:
     automated:
-      prune: false
+      prune: true          # so the disabled memcached caches are actually removed, not left running
       selfHeal: true
     syncOptions:
       - CreateNamespace=true

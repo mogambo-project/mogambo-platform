@@ -30,7 +30,7 @@ loki:
     max_concurrent: 2
 
 singleBinary:
-  replicas: 1
+  replicas: 0                    # SCALED TO 0 to free RAM. Restore to 1 to bring Loki back.
   persistence:
     enabled: true                # small local-path PVC (Loki's root fs is read-only, needs a writable /var/loki)
     size: 2Gi
@@ -51,6 +51,12 @@ test:
 gateway:
   enabled: false                 # write/read straight to the `loki` service on :3100
 minio:
+  enabled: false
+
+# memcached caches off to free RAM (scaled down with the rest of observability)
+chunksCache:
+  enabled: false
+resultsCache:
   enabled: false
 
 # scalable-mode components stay at zero (SingleBinary uses none of them)

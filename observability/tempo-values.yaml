@@ -2,6 +2,7 @@
 # Storage is the pod filesystem (ephemeral); OTLP receivers are enabled so Envoy and Beyla
 # can push spans straight to Tempo (its distributor acts as the collector — no separate
 # OpenTelemetry Collector needed for a local setup).
+replicas: 0                      # SCALED TO 0 to free RAM. Restore to 1 to bring Tempo back.
 tempo:
   # Accept spans over OTLP (gRPC :4317 and HTTP :4318) — the modern standard wire format.
   receivers:

@@ -6,7 +6,7 @@
 # No application changes required.
 controller:
   type: deployment
-  replicas: 1
+  replicas: 0                    # SCALED TO 0 to free RAM. Restore to 1 to bring Alloy back.
 
 alloy:
   resources:
