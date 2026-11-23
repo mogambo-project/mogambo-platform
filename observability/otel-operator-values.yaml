@@ -2,12 +2,14 @@
 # annotation (no application code changes). This is the WSL2-friendly way to get in-service
 # traces (Beyla's eBPF approach can't run on the WSL2 kernel).
 #
-# Use the operator's own self-signed webhook certs so we don't need cert-manager.
+# Webhook certs are issued by cert-manager (see ../cert-manager/) — it keeps the webhook's CA bundle
+# in sync automatically. The operator's own self-signed auto-gen certs drifted out of sync under
+# GitOps (the serving cert and the webhook caBundle stopped matching), so we use cert-manager instead.
 admissionWebhooks:
   certManager:
-    enabled: false
-  autoGenerateCert:
     enabled: true
+  autoGenerateCert:
+    enabled: false
 
 manager:
   # Agents send OTLP straight to Tempo; we don't deploy a collector. Keep the manager small.

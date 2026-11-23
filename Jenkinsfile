@@ -26,7 +26,7 @@ pipeline {
     stage('Validate manifests') {
       when { branch 'master' }
       steps {
-        sh "${env.KC} -strict -ignore-missing-schemas -summary -ignore-filename-pattern '.*values\\.yaml' -ignore-filename-pattern '.*\\.json' gateway monitoring observability headlamp network-policies metrics-server vpa"
+        sh "${env.KC} -strict -ignore-missing-schemas -summary -ignore-filename-pattern '.*values\\.yaml' -ignore-filename-pattern '.*\\.json' gateway monitoring observability headlamp network-policies metrics-server vpa cert-manager"
       }
     }
   }

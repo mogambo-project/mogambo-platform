@@ -1,0 +1,32 @@
+# cert-manager — issues & auto-rotates in-cluster TLS certificates. Here it backs the OTel operator's
+# admission webhook (it keeps the webhook's CA bundle in sync, which the operator's self-signed
+# auto-gen certs failed to do under GitOps).
+# Sync-wave -5: foundational — it (and its webhook) must be up before tools that request certs.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  project: default
+  source:
+    repoURL: https://charts.jetstack.io
+    chart: cert-manager
+    targetRevision: v1.21.3
+    helm:
+      releaseName: cert-manager
+      values: |
+        crds:
+          enabled: true     # install the cert-manager CRDs with the chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true   # cert-manager CRDs are large

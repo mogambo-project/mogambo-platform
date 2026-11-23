@@ -109,6 +109,11 @@ The Fairwinds **VerticalPodAutoscaler** controller + its CRDs. The app chart ren
 for the DB `StatefulSet`s; they need this controller installed to produce right-sizing
 recommendations. → `app/chart.yaml`.
 
+### `cert-manager/` — in-cluster TLS certificates
+Issues and auto-rotates certs for in-cluster webhooks, and keeps their CA bundles in sync. Backs the
+**OTel operator's admission webhook** (its self-signed auto-gen certs drifted under GitOps). Runs at
+**sync-wave -5** so it's ready before tools that request certs. → `app/chart.yaml`.
+
 ## Onboarding a tool
 
 1. Add a folder `<tool>/` with its config.
