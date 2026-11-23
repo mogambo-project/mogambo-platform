@@ -17,6 +17,15 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: headlamp
+  # The chart sets `hostUsers: true` on the pod spec, but kind's kubelet strips the field (the
+  # UserNamespacesSupport feature gate is off), so it never persists — leaving ArgoCD comparing a
+  # desired field the cluster always drops → permanent OutOfSync that a sync can't resolve. Ignore it.
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: headlamp
+      jsonPointers:
+        - /spec/template/spec/hostUsers
   syncPolicy:
     automated:
       prune: false
