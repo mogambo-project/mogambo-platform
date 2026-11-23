@@ -16,7 +16,7 @@ spec:
     path: monitoring
     directory:
       recurse: true                            # includes dashboards/*
-      exclude: '{values.yaml,README.md,app/**}'  # values = chart input; app/ = the Applications
+      exclude: '{values.yaml,README.md,app/**,dashboards/*.json}'  # values=chart input; app/=Applications; raw dashboard JSON lives inside the ConfigMap, not applied directly
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

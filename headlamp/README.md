@@ -5,15 +5,17 @@ cloud console. Served through the shared Envoy Gateway at **http://headlamp.loca
 
 ## How it's deployed (GitOps — no scripts)
 
-Argo CD manages Headlamp as two Applications under [`../infra/`](../infra/):
+Argo CD manages Headlamp as two Applications under [`app/`](./app/):
 
 | Application | What | Sync-wave |
 |---|---|---|
 | `headlamp` | the Helm chart (`headlamp` 0.44.0), namespace `headlamp` | 0 |
-| `headlamp-resources` | admin ServiceAccount + token Secret + HTTPRoute (this folder) | 1 |
+| `headlamp-resources` | a long-lived login token + HTTPRoute (this folder) | 1 |
 
-Bump the chart in [`../infra/headlamp.yaml`](../infra/headlamp.yaml) and push to upgrade.
-(The old `install.sh` has been removed.)
+The chart already ships a `headlamp` ServiceAccount bound to **cluster-admin** (its own
+`headlamp-admin` ClusterRoleBinding), so we don't re-declare any RBAC — only a stable token Secret
+for that SA (see [`admin-token.yaml`](./admin-token.yaml)). Bump the chart in
+[`app/chart.yaml`](./app/chart.yaml) and push to upgrade. (The old `install.sh` has been removed.)
 
 Prerequisite: the shared `mogambo` Gateway allow-lists this namespace to attach routes — its
 `allowedRoutes.namespaces` `Selector` lists `mogambo` + `headlamp`

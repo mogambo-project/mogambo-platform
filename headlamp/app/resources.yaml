@@ -1,5 +1,5 @@
-# Headlamp's own manifests: admin RBAC (SA + ClusterRoleBinding + long-lived token) and its HTTPRoute.
-# Sync-wave 1: after the chart (its Service is the route backend).
+# Headlamp's own manifests: a long-lived login token (for the chart's cluster-admin SA) and its HTTPRoute.
+# Sync-wave 1: after the chart (its Service is the route backend; its SA is what the token is minted for).
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -14,7 +14,7 @@ spec:
     targetRevision: master
     path: headlamp
     directory:
-      include: '{admin-rbac.yaml,route.yaml}'   # skips app/ + README
+      include: '{admin-token.yaml,route.yaml}'   # skips app/ + README
   destination:
     server: https://kubernetes.default.svc
     namespace: headlamp

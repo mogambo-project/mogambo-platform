@@ -1,0 +1,17 @@
+# Login identity for Headlamp. Headlamp authenticates you by a bearer token and then talks to the
+# Kubernetes API AS that token — so the token's RBAC = what you can see/edit in the UI.
+#
+# The Headlamp chart ALREADY creates a `headlamp` ServiceAccount and a `headlamp-admin`
+# ClusterRoleBinding granting it cluster-admin. We deliberately do NOT re-declare those: a second
+# definition of the cluster-scoped `headlamp-admin` binding left it owned by two Argo CD apps
+# (headlamp + headlamp-resources) → permanently OutOfSync. So we add only a long-lived token Secret
+# for that existing SA, so the login token is STABLE (vs `kubectl create token`, which expires).
+# Reachable only via the local Gateway (headlamp.localtest.me:8090) — do NOT expose beyond localhost.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: headlamp-admin-token
+  namespace: headlamp
+  annotations:
+    kubernetes.io/service-account.name: headlamp   # the chart's SA, already cluster-admin
+type: kubernetes.io/service-account-token
